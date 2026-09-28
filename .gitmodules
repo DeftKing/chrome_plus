@@ -1,6 +1,7 @@
 [submodule "mini_gzip"]
 	path = mini_gzip
-	url = https://github.com/Bush2021/mini_gzip
+	url = https://github.com/DeftKing/mini_gzip
+	branch = master
 [submodule "detours"]
 	path = detours
 	url = https://github.com/microsoft/Detours
