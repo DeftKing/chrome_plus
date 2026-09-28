@@ -13,6 +13,7 @@ template <typename Handler>
 struct HandlerEntry {
   Handler handler;
   int priority;
+  HandlerEntry(Handler h, int p) : handler(std::move(h)), priority(p) {}
 };
 
 std::vector<HandlerEntry<KeyboardHandler>> keyboard_handlers;
