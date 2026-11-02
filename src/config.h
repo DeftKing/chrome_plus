@@ -42,7 +42,6 @@ class Config {
   int GetOpenUrlNewTabMode() const { return open_url_new_tab_; }
   int GetBookmarkNewTabMode() const { return bookmark_new_tab_; }
   bool IsNewTabDisable() const { return new_tab_disable_; }
-  const std::wstring& GetDisableTabName() const { return disable_tab_name_; }
   const std::vector<std::wstring>& GetDisableTabNames() const {
     return disable_tab_names_;
   }
@@ -62,8 +61,6 @@ class Config {
 
   std::optional<std::wstring> LoadDirPath(const std::wstring& dir_type);
   int LoadHoverTabDelay();
-  int LoadOpenUrlNewTabMode();
-  int LoadBookmarkNewTabMode();
 
  private:
   // general
@@ -90,7 +87,6 @@ class Config {
   int open_url_new_tab_;
   int bookmark_new_tab_;
   bool new_tab_disable_;
-  std::wstring disable_tab_name_;
   std::vector<std::wstring> disable_tab_names_;
 
   // keymapping

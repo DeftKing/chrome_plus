@@ -15,8 +15,8 @@
 
 namespace {
 
-static auto RawRegOpenKeyExW = RegOpenKeyExW;
-static auto RawRegQueryValueExW = RegQueryValueExW;
+auto RawRegOpenKeyExW = RegOpenKeyExW;
+auto RawRegQueryValueExW = RegQueryValueExW;
 
 // Read the running browser version from the loaded `chrome.dll`'s embedded
 // version resource, which is the same `VS_FIXEDFILEINFO` that
@@ -173,10 +173,8 @@ void SuppressFalseUpgradeNotification() {
 
   DetourTransactionBegin();
   DetourUpdateThread(GetCurrentThread());
-  DetourAttach(reinterpret_cast<LPVOID*>(&RawRegOpenKeyExW),
-               reinterpret_cast<void*>(MyRegOpenKeyExW));
-  DetourAttach(reinterpret_cast<LPVOID*>(&RawRegQueryValueExW),
-               reinterpret_cast<void*>(MyRegQueryValueExW));
+  DetourAttach(&RawRegOpenKeyExW, MyRegOpenKeyExW);
+  DetourAttach(&RawRegQueryValueExW, MyRegQueryValueExW);
   auto status = DetourTransactionCommit();
   if (status != NO_ERROR) {
     DebugLog(L"SuppressFalseUpgradeNotification hooks failed: {}", status);
