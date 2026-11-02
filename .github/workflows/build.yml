@@ -28,6 +28,10 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      actions: read
+
     strategy:
       matrix:
         include:
@@ -85,6 +89,10 @@ jobs:
     needs: build
     runs-on: ubuntu-slim
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
 
     steps:
       - name: Checkout repository
@@ -118,7 +126,7 @@ jobs:
 
       - name: Create Pull Request
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           gh pr create --base main --head release --title "build(release): bump version to ${{ github.event.inputs.version }}" --body "Bump version to ${{ github.event.inputs.version }}"
 
