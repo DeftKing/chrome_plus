@@ -22,12 +22,12 @@ class Config {
   }
   const std::wstring& GetBossKey() const { return boss_key_; }
   const std::wstring& GetTranslateKey() const { return translate_key_; }
-  bool IsShowPassword() const { return show_password_; }
   bool IsWin32K() const { return win32k_; }
   bool IsIgnorePolicies() const { return ignore_policies_; }
   bool IsSuppressFalseUpgradeNotification() const {
     return suppress_false_upgrade_notification_;
   }
+  bool IsManagedUpdates() const { return managed_updates_; }
 
   // tabs
   bool IsKeepLastTab() const { return keep_last_tab_; }
@@ -71,10 +71,10 @@ class Config {
   std::optional<std::wstring> disk_cache_dir_;
   std::wstring boss_key_;
   std::wstring translate_key_;
-  bool show_password_;
   bool win32k_;
   bool ignore_policies_;
   bool suppress_false_upgrade_notification_;
+  bool managed_updates_;
 
   // tabs
   bool keep_last_tab_;

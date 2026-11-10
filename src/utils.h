@@ -72,6 +72,10 @@ std::wstring CanonicalizePath(const std::wstring& path);
 // Get the absolute path
 std::wstring GetAbsolutePath(const std::wstring& path);
 
+// Returns an ID shared by every path to a directory, empty when it can't be
+// opened.
+std::wstring GetDirectoryId(const std::wstring& path);
+
 // Expand environment variables in the path
 std::wstring ExpandEnvironmentPath(const std::wstring& path);
 
@@ -104,7 +108,7 @@ inline void DebugLog(std::wstring_view, auto&&...) {}
 // Window and message processing functions
 HWND GetTopWnd(HWND hwnd);
 void ExecuteCommand(int id, HWND hwnd = 0);
-void LaunchCommands(const std::wstring& get_commands);
+void LaunchCommands(const std::wstring& get_commands, DWORD wait_ms = 0);
 [[nodiscard]] bool IsChromeWindow(HWND hwnd);
 // Returns nullptr when the window under `pt` is not part of Chrome.
 [[nodiscard]] HWND GetChromeRootWindowAt(POINT pt);

@@ -20,7 +20,15 @@ Chrome++ Next is a `version.dll` injection project for Google Chrome. It is load
 - [Latest releases](https://github.com/DeftKing/chrome_plus/releases)
 
 ## Installation
+
+Use [Pitstop](https://github.com/Bush2021/pitstop) to set up Chrome and Chrome++ Next and manage settings and updates through a graphical interface. With automatic updates enabled, Chrome updates can also be applied through Chrome's native "Relaunch to update".
+
+<details>
+<summary>Manual installation</summary>
+
 - Put `version.dll` in the same directory as `chrome.exe`.
+
+</details>
 
 ## Capability Overview
 ### Tab and bookmark behavior
@@ -47,7 +55,6 @@ Chrome++ Next is a `version.dll` injection project for Google Chrome. It is load
 - Ignore enterprise policies with `ignore_policies`.
 - Enable the `win32k` fallback only when Chrome++ itself causes startup crashes.
 - Suppress Chrome's false "out of date" upgrade notification on portable installs with `suppress_false_upgrade_notification`.
-- Additional public options such as `show_password` remain documented in [`src/chrome++.ini`](src/chrome++.ini).
 
 ## Configuration Reference
 - See [`src/chrome++.ini`](src/chrome++.ini) for the full public configuration surface.
