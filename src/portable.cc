@@ -191,12 +191,12 @@ void InjectConfigPaths(std::vector<std::wstring>& args,
                        bool has_user_data_dir,
                        bool has_disk_cache_dir) {
   if (!has_user_data_dir) {
-    if (auto userdata = config.GetUserDataDir(); userdata.has_value()) {
+    if (const auto& userdata = config.GetUserDataDir(); userdata.has_value()) {
       args.emplace_back(L"--user-data-dir=" + *userdata);
     }
   }
   if (!has_disk_cache_dir) {
-    if (auto diskcache = config.GetDiskCacheDir(); diskcache.has_value()) {
+    if (const auto& diskcache = config.GetDiskCacheDir(); diskcache.has_value()) {
       args.emplace_back(L"--disk-cache-dir=" + *diskcache);
     }
   }
@@ -252,8 +252,7 @@ std::wstring GetCommand(LPWSTR param) {
 }  // namespace
 
 void Portable(LPWSTR param) {
-  wchar_t path[MAX_PATH];
-  ::GetModuleFileName(nullptr, path, MAX_PATH);
+  const std::wstring path = GetExePath();
 
   std::wstring args = GetCommand(param);
   std::wstring command_line = QuoteSpaceIfNeeded(path);
@@ -280,8 +279,8 @@ void Portable(LPWSTR param) {
   // https://chromium.googlesource.com/chromium/src/+/HEAD/base/process/launch_win.cc#388
   // https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/app/chrome_exe_main_win.cc#61
   // https://github.com/Bush2021/chrome_plus/issues/252
-  if (::CreateProcessW(path, command_line_buffer.data(), nullptr, nullptr,
-                       FALSE, 0, nullptr, current_directory.c_str(),
+  if (::CreateProcessW(path.c_str(), command_line_buffer.data(), nullptr,
+                       nullptr, FALSE, 0, nullptr, current_directory.c_str(),
                        &startup_info, &process_info)) {
     ::CloseHandle(process_info.hThread);
     ::CloseHandle(process_info.hProcess);

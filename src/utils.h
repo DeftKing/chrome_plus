@@ -3,6 +3,7 @@
 
 #include <windows.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <initializer_list>
 #include <span>
@@ -28,6 +29,8 @@ inline constexpr int IDC_SHOW_TRANSLATE = 35009;
 inline constexpr int IDC_WINDOW_CLOSE_OTHER_TABS = 35023;
 
 // Global constants - use functions to avoid static initialization order issues
+// Returns the path of this process's executable, empty when it can't be read.
+std::wstring GetExePath();
 const std::wstring& GetAppDir();
 const std::wstring& GetIniPath();
 
@@ -60,16 +63,17 @@ std::wstring JoinArgsString(const std::vector<std::wstring>& lines,
 std::span<uint8_t> SearchMemory(std::span<uint8_t> src,
                                 std::span<const uint8_t> sub);
 
+// Returns the 64-bit FNV-1a hash of `bytes`. Not collision resistant.
+uint64_t Fnv1aHash(std::span<const std::byte> bytes);
+
 // Parse the INI file
 std::wstring GetIniString(const wchar_t* section,
                           const wchar_t* key,
                           const wchar_t* default_value);
 int GetIniInt(const wchar_t* section, const wchar_t* key, int default_value);
 
-// Canonicalize the path
-std::wstring CanonicalizePath(const std::wstring& path);
-
-// Get the absolute path
+// Returns the absolute, normalized form of `path`, or `path` unchanged when
+// it can't be resolved.
 std::wstring GetAbsolutePath(const std::wstring& path);
 
 // Returns an ID shared by every path to a directory, empty when it can't be

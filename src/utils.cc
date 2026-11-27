@@ -8,8 +8,11 @@
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <cwctype>
+#include <filesystem>
 #include <functional>
 #include <initializer_list>
 #include <optional>
@@ -22,14 +25,28 @@
 // Global variable definitions
 HMODULE hInstance = nullptr;
 
+std::wstring GetExePath() {
+  // With long paths enabled the path can pass MAX_PATH, up to the 32767
+  // characters of the `\\?\` form.
+  constexpr DWORD kMaxLength = 32768;
+  for (DWORD size = 512; size <= kMaxLength; size *= 2) {
+    std::wstring path(size, L'\0');
+    const DWORD length = ::GetModuleFileNameW(nullptr, path.data(), size);
+    if (length == 0) {
+      return L"";
+    }
+    if (length < size) {
+      path.resize(length);
+      return path;
+    }
+  }
+  return L"";
+}
+
 // Global constants - use functions to avoid static initialization order issues
 const std::wstring& GetAppDir() {
-  static std::wstring app_dir = []() {
-    wchar_t path[MAX_PATH];
-    ::GetModuleFileName(nullptr, path, MAX_PATH);
-    ::PathRemoveFileSpec(path);
-    return std::wstring(path);
-  }();
+  static std::wstring app_dir =
+      std::filesystem::path(GetExePath()).parent_path().wstring();
   return app_dir;
 }
 
@@ -104,7 +121,7 @@ void compression_html(std::string& html) {
   auto lines = StringSplit(html, '\n');
   html.clear();
   for (auto& line : lines) {
-    html += "\n";
+    html += '\n';
     html += trim(line);
   }
 }
@@ -174,6 +191,15 @@ std::span<uint8_t> SearchMemory(std::span<uint8_t> src,
   return {};
 }
 
+uint64_t Fnv1aHash(std::span<const std::byte> bytes) {
+  uint64_t hash = 14695981039346656037ULL;
+  for (std::byte b : bytes) {
+    hash ^= static_cast<uint64_t>(b);
+    hash *= 1099511628211ULL;
+  }
+  return hash;
+}
+
 std::wstring GetIniString(const wchar_t* section,
                           const wchar_t* key,
                           const wchar_t* default_value) {
@@ -198,15 +224,18 @@ int GetIniInt(const wchar_t* section, const wchar_t* key, int default_value) {
                                                   GetIniPath().c_str()));
 }
 
-std::wstring CanonicalizePath(const std::wstring& path) {
-  TCHAR temp[MAX_PATH];
-  ::PathCanonicalize(temp, path.data());
-  return std::wstring(temp);
-}
-
 std::wstring GetAbsolutePath(const std::wstring& path) {
-  wchar_t buffer[MAX_PATH];
-  ::GetFullPathNameW(path.c_str(), MAX_PATH, buffer, nullptr);
+  const DWORD size = ::GetFullPathNameW(path.c_str(), 0, nullptr, nullptr);
+  if (size == 0) {
+    return path;
+  }
+  std::wstring buffer(size, L'\0');
+  const DWORD length =
+      ::GetFullPathNameW(path.c_str(), size, buffer.data(), nullptr);
+  if (length == 0 || length >= size) {
+    return path;
+  }
+  buffer.resize(length);
   return buffer;
 }
 
